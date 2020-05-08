@@ -25,7 +25,7 @@ func Unveil(path string, flags string) {}
 // processes filesystem view.
 //
 // On non-OpenBSD machines this call is a noop.
-func UnveilBlock() {}
+func UnveilBlock() error {}
 
 // Pledge wraps OpenBSD's pledge(2) system call. One can use this to limit
 // the system calls a process can make.
