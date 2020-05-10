@@ -2,8 +2,14 @@
 
 package protect
 
-func unveil(path string, flags string) {}
+func unveil(path string, flags string) error {
+	return nil
+}
 
-func unveilBlock() error {}
+func unveilBlock() error {
+	return nil
+}
 
-func pledge(promises string) {}
+func pledge(promises string) error {
+	return nil
+}

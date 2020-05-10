@@ -16,8 +16,8 @@ package protect
 // Preventing access to anything else.
 //
 // On non-OpenBSD machines this call is a noop.
-func Unveil(path string, flags string) {
-	unveil(path, flags)
+func Unveil(path string, flags string) error {
+	return unveil(path, flags)
 }
 
 // UnveilBlock locks the Unveil'd paths. Preventing further changes to a
@@ -32,6 +32,6 @@ func UnveilBlock() error {
 // the system calls a process can make.
 //
 // On non-OpenBSD machines this call is a noop.
-func Pledge(promises string) {
-	pledge(promises)
+func Pledge(promises string) error {
+	return pledge(promises)
 }
