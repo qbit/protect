@@ -7,6 +7,11 @@ figure it should be a package.
 */
 package protect
 
+import (
+	"regexp"
+	"strings"
+)
+
 // Unveil is a wrapper for OpenBSD's unveil(2). unveil can be used to limit
 // a processes view of the filesystem.
 //
@@ -34,4 +39,34 @@ func UnveilBlock() error {
 // On non-OpenBSD machines this call is a noop.
 func Pledge(promises string) error {
 	return pledge(promises)
+}
+
+// ReducePledges takes the current list of plpedges and a list of pledges that
+// should be removed. The new list is returned and Pledge() will be called
+// with the reduced set of pledges.
+func ReducePledges(current, toRemove string) (string, error) {
+	newPledges, err := reduce(current, toRemove)
+	if err != nil {
+		return "", err
+	}
+
+	return newPledges, pledge(newPledges)
+}
+
+func reduce(a, b string) (string, error) {
+	var newList []string
+	currentList := strings.Split(a, " ")
+
+	for _, s := range currentList {
+		match, err := regexp.MatchString(s, b)
+		if err != nil {
+			return "", err
+		}
+
+		if !match {
+			newList = append(newList, s)
+		}
+	}
+
+	return strings.Join(newList, " "), nil
 }
