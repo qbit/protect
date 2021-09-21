@@ -25,6 +25,23 @@ func Unveil(path string, flags string) error {
 	return unveil(path, flags)
 }
 
+// UnveilSet takes a set of Unveils and runs them all, returning the first
+// error encountered. Optionally call UnveilBlock at the end.
+func UnveilSet(set map[string]string, block bool) error {
+	for p, s := range set {
+		err := Unveil(p, s)
+		if err != nil {
+			return err
+		}
+	}
+
+	if block {
+		return UnveilBlock()
+	}
+
+	return nil
+}
+
 // UnveilBlock locks the Unveil'd paths. Preventing further changes to a
 // processes filesystem view.
 //
