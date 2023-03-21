@@ -4,17 +4,18 @@
 package protect
 
 import (
-	"log"
 	"os"
 
 	"github.com/landlock-lsm/go-landlock/landlock"
 )
 
-type lands []landlock.PathOpt
+type lands struct {
+	paths []landlock.PathOpt
+}
 
 var landToLock lands
 
-func (l lands) landAdd(path, flags string) error {
+func landAdd(path, flags string) error {
 	s, err := os.Stat(path)
 	if err != nil {
 		return err
@@ -24,31 +25,24 @@ func (l lands) landAdd(path, flags string) error {
 	case mode.IsDir():
 		switch flags {
 		case "r":
-			l = append(l, landlock.RODirs(path))
-		case "w":
-			l = append(l, landlock.RWDirs(path))
-		case "rw":
-			l = append(l, landlock.RWDirs(path))
+			landToLock.paths = append(landToLock.paths, landlock.RODirs(path))
+		default:
+			landToLock.paths = append(landToLock.paths, landlock.RWDirs(path))
 		}
 	default:
 		switch flags {
 		case "r":
-			log.Println("READ ONLY")
-			l = append(l, landlock.ROFiles(path))
-		case "w":
-			log.Println("WRITE")
-			l = append(l, landlock.RWFiles(path))
-		case "rw":
-			log.Println("WRITE")
-			l = append(l, landlock.RWFiles(path))
+			landToLock.paths = append(landToLock.paths, landlock.ROFiles(path))
+		default:
+			landToLock.paths = append(landToLock.paths, landlock.RWFiles(path))
 		}
 	}
 
 	return nil
 }
 
-func (l *lands) landWalk() []landlock.PathOpt {
-	return *l
+func (l lands) landWalk() []landlock.PathOpt {
+	return l.paths
 }
 
 func unveil(path string, flags string) error {
@@ -58,7 +52,7 @@ func unveil(path string, flags string) error {
 			return landlock.V2.BestEffort().RestrictPaths()
 		}
 	}
-	return landToLock.landAdd(path, flags)
+	return landAdd(path, flags)
 }
 
 func unveilBlock() error {
