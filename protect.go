@@ -12,8 +12,8 @@ import (
 	"strings"
 )
 
-// Unveil is a wrapper for OpenBSD's unveil(2). unveil can be used to limit
-// a processes view of the filesystem.
+// Unveil is a wrapper for OpenBSD's unveil(2) and Linux's LandLock. Both of
+// which are used to limit a processes view of the filesystem.
 //
 // The first call to Unveil removes a processes visibility to everything
 // except 'path'. Any subsequent calls expand the view to contain those
@@ -45,7 +45,7 @@ func UnveilSet(set map[string]string, block bool) error {
 // UnveilBlock locks the Unveil'd paths. Preventing further changes to a
 // processes filesystem view.
 //
-// On non-OpenBSD machines this call is a noop.
+// On non-OpenBSD,Linux machines this call is a noop.
 func UnveilBlock() error {
 	return unveilBlock()
 }

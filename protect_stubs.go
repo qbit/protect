@@ -1,5 +1,5 @@
-//go:build !openbsd
-// +build !openbsd
+//go:build !openbsd && !linux
+// +build !openbsd,!linux
 
 package protect
 
