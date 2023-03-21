@@ -22,7 +22,6 @@ func (l lands) landAdd(path, flags string) error {
 
 	switch mode := s.Mode(); {
 	case mode.IsDir():
-		log.Println("directory", path)
 		switch flags {
 		case "r":
 			l = append(l, landlock.RODirs(path))
@@ -32,7 +31,6 @@ func (l lands) landAdd(path, flags string) error {
 			l = append(l, landlock.RWDirs(path))
 		}
 	default:
-		log.Println("file", path)
 		switch flags {
 		case "r":
 			log.Println("READ ONLY")
